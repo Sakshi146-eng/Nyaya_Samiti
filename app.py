@@ -27,7 +27,7 @@ from model.tamper_detection.autoencoder_gan import Autoencoder, Discriminator
 
 # --- Configuration ---
 # Tesseract OCR path (update if necessary)
-TESSERACT_CMD = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe' # For Windows
+TESSERACT_CMD = r"C:\Users\saksh\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # For Windows
 # TESSERACT_CMD = '/usr/local/bin/tesseract' # For macOS/Linux
 
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD

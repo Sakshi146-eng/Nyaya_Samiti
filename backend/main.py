@@ -1,26 +1,34 @@
-from fastapi import FastAPI,HTTPException
-from database import client, users_collection
-from models import User
+from fastapi import FastAPI, HTTPException
+from fastapi.exception_handlers import http_exception_handler
+from asgi_correlation_id import CorrelationIdMiddleware
+from contextlib import asynccontextmanager
+from database import database
+from routers.post import router as post_router
+from logging_conf import configure_logging
+import logging
+from routers.users import router as users_router
 
-app=FastAPI()
+__name__="storeapi.main"
+logger=logging.getLogger(__name__)
 
-@app.on_event("startup")
-async def startup_db_check():
-    try:
-        await client.admin.command("ping")
-        print("Database connection successful")
-    except Exception as e:
-        print("Database connection failed")
-        print(e)
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    configure_logging()
+    logger.info("Hello World")
+    await database.connect()
+    yield
+    await database.disconnect()
 
-@app.get("/")
+app = FastAPI(lifespan=lifespan)
+app.add_middleware(CorrelationIdMiddleware)
+
+@app.exception_handler(HTTPException)
+async def http_exception_handle_logging(request,exc):
+    logger.error(f"HTTPException: {exc.status_code} {exc.detail}")
+    return await http_exception_handler(request,exc)
+
+@app.get('/')
 async def root():
-    return {"message": "Welcome to landing page"}
-
-@app.post("/users/")
-async def create_user(user: User):
-    # Logic to create a new user
-    user_dict=user.dict()
-    result=await users_collection.insert_one(user_dict)
-
-    return {"id":str(result.inserted_id),"message": "User created successfully", "user": user}
+    return {"message": "Welcome to the Store API!"}
+app.include_router(post_router)
+app.include_router(users_router)

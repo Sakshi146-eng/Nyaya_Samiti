@@ -13,7 +13,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 assert GEMINI_API_KEY != "", "Please set GEMINI_API_KEY (env var or .env)."
 
 # If on Windows, set tesseract.exe path here:
-TESSERACT_CMD = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
+TESSERACT_CMD = r"C:\Users\saksh\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
 
 OCR_LANGS = "eng+hin"
 RUNS_DIR = "runs"
